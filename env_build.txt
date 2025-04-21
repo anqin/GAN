@@ -1,0 +1,11 @@
+# 创建一个新的 Conda 环境
+conda create -n deepseek_env python=3.9
+
+# 激活环境
+conda activate deepseek_env
+
+# 安装 PyTorch（CPU 版本）
+conda install pytorch torchvision torchaudio cpuonly -c pytorch
+
+# 安装 transformers 库
+pip install transformers
