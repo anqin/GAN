@@ -7,16 +7,13 @@
 #   Author        : An Qin
 #   Email         : anqin.qin@gmail.com
 #   File Name     : test_torch.py
-#   Last Modified : 2025-04-21 15:03
+#   Last Modified : 2025-04-21 15:41
 #   Describe      : 
 #
 # ====================================================
 
-import sys
-# import os
-
-
 import torch
+import time
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 
@@ -45,9 +42,9 @@ class FineTunedDeepSeek1_5BModel(torch.nn.Module):
 # 基于qwen模型进行调训的模型类
 class FineTunedQwenModel(torch.nn.Module):
     def __init__(self):
-        super(FineTunedQwenModel, self).__init__() 
-        self.model = AutoModelForCausalLM.from_pretrained("/home/anqin/download/qwen")
-        self.tokenizer = AutoTokenizer.from_pretrained("/home/anqin/download/qwen")
+        super(FineTunedQwenModel, self).__init__()
+        self.model = AutoModelForCausalLM.from_pretrained("your_qwen_model_path")
+        self.tokenizer = AutoTokenizer.from_pretrained("your_qwen_model_path")
 
     def forward(self, input_ids, attention_mask, labels=None):
         return self.model(input_ids=input_ids, attention_mask=attention_mask, labels=labels)
@@ -64,8 +61,11 @@ def train_model(problem_data_list, model_choice="deepseek_7b"):
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.AdamW(model.parameters(), lr=1e-5)
 
-    for _ in range(10):  # 这里减少训练轮数以加快示例速度，实际应用中可调整
-        for problem_data in problem_data_list:
+    start_time = time.time()
+    for epoch in range(2):  # 这里减少训练轮数以加快示例速度，实际应用中可调整
+        print(f"开始第 {epoch + 1} 轮训练...")
+        for idx, problem_data in enumerate(problem_data_list):
+            print(f"正在处理第 {idx + 1} 个数据样本...")
             problem = problem_data["problem"]
             correct_agents_thinking = problem_data["correct_agents_thinking"]
             if not correct_agents_thinking:
@@ -83,7 +83,10 @@ def train_model(problem_data_list, model_choice="deepseek_7b"):
             loss = outputs.loss
             loss.backward()
             optimizer.step()
-
+            print(f"第 {idx + 1} 个数据样本处理完毕，当前损失值: {loss.item()}")
+        print(f"第 {epoch + 1} 轮训练结束")
+    end_time = time.time()
+    print(f"整个训练过程耗时: {end_time - start_time} 秒")
     return model
 
 
@@ -109,8 +112,10 @@ def main():
     ]
 
     # 调用训练模型函数，这里设置为使用deepseek 1.5b模型进行训练
-    trained_model = train_model(test_problem_data_list, model_choice="qwen")
-    print("模型训练完成。")
+    start_total_time = time.time()
+    trained_model = train_model(test_problem_data_list, model_choice="deepseek_1_5b")
+    end_total_time = time.time()
+    print(f"整个程序运行耗时: {end_total_time - start_total_time} 秒")
 
 
 if __name__ == "__main__":
