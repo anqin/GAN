@@ -7,7 +7,7 @@
 #   Author        : An Qin
 #   Email         : anqin.qin@gmail.com
 #   File Name     : test_torch.py
-#   Last Modified : 2025-04-21 15:41
+#   Last Modified : 2025-04-21 15:43
 #   Describe      : 
 #
 # ====================================================
@@ -43,8 +43,8 @@ class FineTunedDeepSeek1_5BModel(torch.nn.Module):
 class FineTunedQwenModel(torch.nn.Module):
     def __init__(self):
         super(FineTunedQwenModel, self).__init__()
-        self.model = AutoModelForCausalLM.from_pretrained("your_qwen_model_path")
-        self.tokenizer = AutoTokenizer.from_pretrained("your_qwen_model_path")
+        self.model = AutoModelForCausalLM.from_pretrained("/home/anqin/download/qwen")
+        self.tokenizer = AutoTokenizer.from_pretrained("/home/anqin/download/qwen")
 
     def forward(self, input_ids, attention_mask, labels=None):
         return self.model(input_ids=input_ids, attention_mask=attention_mask, labels=labels)
@@ -113,7 +113,7 @@ def main():
 
     # 调用训练模型函数，这里设置为使用deepseek 1.5b模型进行训练
     start_total_time = time.time()
-    trained_model = train_model(test_problem_data_list, model_choice="deepseek_1_5b")
+    trained_model = train_model(test_problem_data_list, model_choice="qwen")
     end_total_time = time.time()
     print(f"整个程序运行耗时: {end_total_time - start_total_time} 秒")
 
